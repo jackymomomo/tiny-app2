@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const PORT = 8090
+app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs' )
 
@@ -10,17 +11,33 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const generateRandomString = () => {
+  let randomShort = '';
+   const char = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+   for (let x = 0; x < 7; x++) {
+     if (Math.random() < 0.5) {
+       randomShort += Math.floor(Math.random() * 10);
+     } else {
+       randomShort += char[Math.floor(Math.random() * char.length)];
+     }
+   }
+   return randomShort;
+ };
 
 app.get('/', (req, res) => {
   res.send('Hello')
 })
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+
+
+app.get("/urls/new", (req, res) => {
+  res.render('urls_new')
 });
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
+
+app.post('/urls', (req, res) => {
+  console.log(req.body)
+  res.send('hi')
+})
 
 app.get('/urls', (req, res) => {
   let templateUrlVariables = { urls: urlDatabase }
@@ -31,6 +48,13 @@ app.get('/urls/:id', (req, res) => {
   let templateVarsForUrlIDS = {id : req.params.id, longURL: urlDatabase[req.params.id] }
   res.render('urls_show', templateVarsForUrlIDS)
 })
+
+// app.get("/urls.json", (req, res) => {
+//   res.json(urlDatabase);
+// });
+// app.get("/hello", (req, res) => {
+//   res.send("<html><body>Hello <b>World</b></body></html>\n");
+// });
 
 
 app.listen(PORT, () => {
