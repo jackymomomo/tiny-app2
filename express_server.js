@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const PORT = 8080
+const PORT = 8090
 
 app.set('view engine', 'ejs' )
 
@@ -18,10 +18,15 @@ app.get('/', (req, res) => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
+
+app.get('/urls', (req, res) => {
+  let templateUrlVariables = { urls: urlDatabase }
+res.render('urls_index', templateUrlVariables)
+});
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
