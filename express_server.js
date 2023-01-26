@@ -24,6 +24,11 @@ const generateRandomString = () => {
    return randomShort;
  };
 
+app.post('/login', (req, res) => {
+  res.cookie('username', req.body)
+  res.redirect('/urls')
+})
+
 app.post('/urls/:id/edit', (req, res) => {
   urlDatabase[req.params.id] = req.body.newURL
   res.redirect('/urls')
