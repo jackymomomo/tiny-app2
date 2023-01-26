@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const PORT = 8090
+const PORT = 8080
 app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs' )
@@ -28,7 +28,10 @@ app.get('/', (req, res) => {
   res.send('Hello')
 })
 
-
+app.post('/urls/:id/delete', (req, res) => {
+  delete urlDatabase[req.params.id]
+  res.redirect('/urls')
+})
 
 app.get("/urls/new", (req, res) => {
   res.render('urls_new')
