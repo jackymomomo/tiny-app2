@@ -26,12 +26,6 @@ const generateRandomString = () => {
   return randomShort;
 };
 
-app.post('/login', (req, res) => {
-  let cookie = req.body.username
-  res.cookie('username', cookie);
-  res.redirect('/urls');
-});
-
 app.post('/urls/:id/edit', (req, res) => {
   urlDatabase[req.params.id] = req.body.newURL;
   res.redirect('/urls');
@@ -41,6 +35,18 @@ app.post('/urls/:id/delete', (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect('/urls');
 });
+
+app.post('/login', (req, res) => {
+  let cookie = req.body.username
+  res.cookie("username",cookie);
+  res.redirect('/urls');
+})
+
+
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
+})
 
 app.get("/urls/new", (req, res) => {
   const templateVars = {
