@@ -13,6 +13,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
+
 const generateRandomString = () => {
   let randomShort = '';
   const char = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
@@ -50,6 +63,27 @@ app.post('/login', (req, res) => {
 app.post('/logout', (req, res) => {
   res.clearCookie('username');
   res.redirect('/urls');
+})
+
+app.post('/register', (req, res) => {
+  const newUserId = generateRandomString
+  let emailBody = req.body.email
+  let passwordBody = req.body.password
+  const user = {
+    id: newUserId,
+    email: emailBody,
+    password: passwordBody
+  }
+  users[newUserId] = user
+
+  if (user.emailBody === '' || user.passwordBody ) {
+    res.send("400 Bad Request")
+  } else {
+    res
+    .cookie('user_id', newUserId)
+    console.log(users)
+    res.redirect('/urls')
+  }
 })
 
 app.get("/urls/new", (req, res) => {

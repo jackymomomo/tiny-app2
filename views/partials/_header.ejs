@@ -18,19 +18,18 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
       <div class="navbar-nav">
-        
-          <% if (typeof username !== 'undefined') { %>
-            <form action='/logout' method="post">
-              <label form="name" class="nav-item nav-link"> Welcome : <%= username %></label>
-              <button type="submit" class="btn btn-outline-danger" > Logout </button>
-          <% } else { %>
-              <form method="post" action="/login">
-              <input type="text" name="username" class="form-control">
-              <button type="submit" class="btn btn-primary">login</button>
-            </form>
-         <% } %> 
-        </form>
       </div>
     </div>
+    <% if (typeof username !== 'undefined') { %>
+      <form action='/logout' method="post">
+        <label class="nav-item nav-link"> Welcome: <%= username %>
+        <button type="submit" class="btn btn-outline-danger" > Logout </button>
+    <% } else { %>
+        <form method="post" action="/login">
+        <input type="text" name="username" class="form-control bg-secondary text-light">
+        <button type="submit" class="btn btn-primary">login</button>
+      </form>
+   <% } %> 
+  </form>
   </nav>
 </header>
