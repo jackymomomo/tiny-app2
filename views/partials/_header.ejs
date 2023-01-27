@@ -20,8 +20,12 @@
       <div class="navbar-nav">
         <form method="post" action="/login">
           <!-- <a class="nav-item nav-link" href="/login">Login</a> -->
-          <input type="text" name="username" class="form-control">
-          <button type="submit" class="btn btn-primary">login</button>
+          <% if (typeof username !== 'undefined') { %>
+            <span class="navbar-text">Welcome, <%= username %>
+          <% } else { %>
+            <input type="text" name="username" class="form-control">
+            <button type="submit" class="btn btn-primary">login</button>
+         <% } %> 
         </form>
       </div>
     </div>
