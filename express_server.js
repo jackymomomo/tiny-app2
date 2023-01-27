@@ -26,6 +26,10 @@ const generateRandomString = () => {
   return randomShort;
 };
 
+app.get('/register', (req, res) => {
+  res.render('registration-form')
+})
+
 app.post('/urls/:id/edit', (req, res) => {
   urlDatabase[req.params.id] = req.body.newURL;
   res.redirect('/urls');
