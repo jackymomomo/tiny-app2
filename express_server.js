@@ -39,8 +39,23 @@ const generateRandomString = () => {
   return randomShort;
 };
 
+const getUsersByThierEmail = function(email, data) {
+  for(let obj in data){
+    let user = data[obj];
+    if (email === user.email){
+      return user
+  } 
+  }
+  return null
+ }
+
+
 app.get('/register', (req, res) => {
   res.render('registration-form')
+})
+
+app.get('/login', (req, res) => {
+  res.render('login_page')
 })
 
 app.post('/urls/:id/edit', (req, res) => {
@@ -65,26 +80,28 @@ app.post('/logout', (req, res) => {
   res.redirect('/urls');
 })
 
-app.post('/register', (req, res) => {
-  const newUserId = generateRandomString
-  let emailBody = req.body.email
-  let passwordBody = req.body.password
-  const user = {
-    id: newUserId,
-    email: emailBody,
-    password: passwordBody
-  }
-  users[newUserId] = user
-
-  if (user.emailBody === '' || user.passwordBody ) {
-    res.send("400 Bad Request")
+app.post("/register", (req, res) => {
+  if (req.body.email && req.body.password) {
+    if (!getUsersByThierEmail(req.body.email, users.email)) {
+      const randomID = `UID${generateRandomString()}`;
+            users[randomID] = {id : randomID, email : req.body.email, password: req.body.password};
+      req.body.username = randomID;
+      res.redirect(302, '/urls');
+    } else {
+      const message = `EMAIL ALREADY IN USE: please login instead`;
+      const templateVars = { message, error : '400' };
+      res
+      .cookie('username', templateVars)
+      .redirect(400, '/register')
+    }
   } else {
+    const message = 'Please fill out the email and password fields to register';
+    const templateVars = { message, error : '400' };
     res
-    .cookie('user_id', newUserId)
-    console.log(users)
-    res.redirect('/urls')
+    .cookie('username', templateVars)
+    .redirect(400, '/register')
   }
-})
+});
 
 app.get("/urls/new", (req, res) => {
   const templateVars = {

@@ -21,13 +21,17 @@
       </div>
     </div>
     <% if (typeof username !== 'undefined') { %>
-      <form action='/logout' method="post">
-        <label class="nav-item nav-link"> Welcome: <%= username %>
-        <button type="submit" class="btn btn-outline-danger" > Logout </button>
+      <span class="navbar-text">Welcome, <%= username.email %>&emsp;</span>
+      <form action="/logout" method='POST'>
+        <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
     <% } else { %>
-        <form method="post" action="/login">
-        <input type="text" name="username" class="form-control bg-secondary text-light">
+        <form method="get" action="/login">
         <button type="submit" class="btn btn-primary">login</button>
+        &emsp;
+      </form>
+      <form method="get" action="/register"> 
+        <button class='btn btn-dark' type="submit">Register</button>
       </form>
    <% } %> 
   </form>
