@@ -27,6 +27,8 @@ const users = {
   },
 };
 
+
+
 const addUser = (email, password) => {
   const id = generateRandomString();
   users[id] = {
@@ -132,25 +134,31 @@ app.post("/register", (req, res) => {
 
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]],
+  const templateVars = { user: users[req.cookies["user_id"]] }
+  if (templateVars.user) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.render("registration-form", templateVars);
   }
-  res.render('urls_new', templateVars);
 });
 
-app.post('/urls', (req, res) => {
-  
+
+app.post("/urls", (req, res) => {
   const randomShort = generateRandomString();
   urlDatabase[randomShort] = req.body.longURL;
-  res.redirect('/urls/' + String(randomShort));
+  res.redirect(`/urls/${randomShort}`);
 });
 
-app.get('/urls', (req, res) => {
-const templateVars = {
-  user: users[req.cookies["user_id"]],
-  urls: urlDatabase
+app.get("/urls", (req, res) => {
+  let templateVars = {
+    user: users[req.cookies["user_id"]],
+    urls: urlDatabase
   };
-  res.render('urls_index', templateVars);
+  if (templateVars.user) {
+    res.render("urls_index", templateVars);
+  } else {
+    res.status(400).redirect('registration-form')
+  }
 });
 
 app.get('/urls/:id', (req, res) => {
@@ -165,6 +173,16 @@ app.get('/urls/:id', (req, res) => {
 app.get('/', (req, res) => {
   res.redirect('/urls')
 })
+
+const urlsForUser = (id) => {
+  let filtered = {};
+  for (let urlID of Object.keys(urlDatabase)) {
+    if (urlDatabase[urlID].userID === id) {
+      filtered[urlID] = urlDatabase[urlID];
+    }
+  }
+  return filtered;
+};
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
