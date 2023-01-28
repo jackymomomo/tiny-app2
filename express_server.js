@@ -71,6 +71,13 @@ const getUsersByThierEmail = function(email, data) {
   return null
  }
 
+ const checkPassword = (user, password) => {
+  if (user.password === password) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
 app.get('/register', (req, res) => {
   let templateVars = { user: users[req.cookies["user_id"]],
@@ -93,24 +100,21 @@ app.post('/urls/:id/delete', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  const user = getUsersByThierEmail(req.body.email, users);
-  if (user) {
-    if (req.body.password === user.password) {
-      res.cookie('user', users);
-      res.redirect('/urls');
-    } else {
-      res.statusCode = 403;
-      res.send('<h2>403 Forbidden<br>You entered the wrong password.</h2>')
-    }
+  const { email, password } = req.body;
+  const user = checkEmail(email);
+  if (!user) {
+    res.status(403).send("Email cannot be found");
+  } else if (!checkPassword(user, password))  {
+    res.status(403).send("Wrong password");
   } else {
-    res.statusCode = 403;
-    res.send('<h2>403 Forbidden<br>This email address is not registered.</h2>')
+    res.cookie('user_id', user.id);
+    res.redirect("/urls");
   }
 });
 
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id');
-  res.redirect('/urls');
+  res.redirect('/register');
 })
 
 app.post("/register", (req, res) => {
@@ -122,7 +126,7 @@ app.post("/register", (req, res) => {
   } else {
     const user_id = addUser(email, password);
     res.cookie('user_id', user_id);
-    res.redirect("/urls");
+    res.redirect("/login");
   }
 });
 
