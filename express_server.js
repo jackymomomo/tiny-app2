@@ -4,6 +4,7 @@ const PORT = 8080;
 const cookieParser = require('cookie-parser')
 app.use(express.urlencoded({ extended: true }));
 
+
 app.set('view engine', 'ejs');
 app.use(cookieParser())
 
@@ -25,6 +26,27 @@ const users = {
     password: "dishwasher-funk",
   },
 };
+
+const addUser = (email, password) => {
+  const id = generateRandomString();
+  users[id] = {
+    id,
+    email,
+    password
+  };
+  return id;
+};
+
+const checkRegistration = (email, password) => {
+  if (email && password) {
+    return true;
+  }
+  return false
+};
+
+const checkEmail = email => {
+  return Object.values(users).find(user => user.email === email);
+}
 
 const generateRandomString = () => {
   let randomShort = '';
@@ -51,7 +73,9 @@ const getUsersByThierEmail = function(email, data) {
 
 
 app.get('/register', (req, res) => {
-  res.render('registration-form')
+  let templateVars = { user: users[req.cookies["user_id"]],
+}
+  res.render('registration-form', templateVars)
 })
 
 app.get('/login', (req, res) => {
@@ -69,43 +93,43 @@ app.post('/urls/:id/delete', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  let cookie = req.body.username
-  res.cookie("username",cookie);
-  res.redirect('/urls');
-})
-
+  const user = getUsersByThierEmail(req.body.email, users);
+  if (user) {
+    if (req.body.password === user.password) {
+      res.cookie('user', users);
+      res.redirect('/urls');
+    } else {
+      res.statusCode = 403;
+      res.send('<h2>403 Forbidden<br>You entered the wrong password.</h2>')
+    }
+  } else {
+    res.statusCode = 403;
+    res.send('<h2>403 Forbidden<br>This email address is not registered.</h2>')
+  }
+});
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 })
 
 app.post("/register", (req, res) => {
-  if (req.body.email && req.body.password) {
-    if (!getUsersByThierEmail(req.body.email, users.email)) {
-      const randomID = `UID${generateRandomString()}`;
-            users[randomID] = {id : randomID, email : req.body.email, password: req.body.password};
-      req.body.username = randomID;
-      res.redirect(302, '/urls');
-    } else {
-      const message = `EMAIL ALREADY IN USE: please login instead`;
-      const templateVars = { message, error : '400' };
-      res
-      .cookie('username', templateVars)
-      .redirect(400, '/register')
-    }
+  const { email, password } = req.body;
+  if (!checkRegistration(email, password)) {
+    res.status(400).send('Email and/or password is missing');
+  } else if (checkEmail(email)) {
+    res.status(400).send('This email has already been registered')
   } else {
-    const message = 'Please fill out the email and password fields to register';
-    const templateVars = { message, error : '400' };
-    res
-    .cookie('username', templateVars)
-    .redirect(400, '/register')
+    const user_id = addUser(email, password);
+    res.cookie('user_id', user_id);
+    res.redirect("/urls");
   }
 });
 
+
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"], 
+    user: users[req.cookies["user_id"]],
   }
   res.render('urls_new', templateVars);
 });
@@ -119,8 +143,8 @@ app.post('/urls', (req, res) => {
 
 app.get('/urls', (req, res) => {
 const templateVars = {
-  username: req.cookies["username"],
-    urls: urlDatabase
+  user: users[req.cookies["user_id"]],
+  urls: urlDatabase
   };
   res.render('urls_index', templateVars);
 });
@@ -129,17 +153,17 @@ app.get('/urls/:id', (req, res) => {
   let templateVarsForUrlIDS = {
       id : req.params.id,
     longURL: urlDatabase[req.params.id],
-    username : req.cookies["username"] 
+    user: users[req.cookies["user_id"]],
   };
   res.render('urls_show', templateVarsForUrlIDS);
 });
 
+app.get('/', (req, res) => {
+  res.redirect('/urls')
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
 
-// app.get('/', (req, res) => {
-//   res.send('Hello')
-// })

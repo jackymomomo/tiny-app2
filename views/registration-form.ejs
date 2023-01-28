@@ -19,6 +19,7 @@
 
     <title>Register - Tiny App</title>
   </head>
+  <!-- <%- include('./partials/_header') %> -->
 
 
 <body>
@@ -30,10 +31,10 @@
     <form action="/register" method="post">
       <div class="form-group"></div>
       <label for="email" class="text-light small">Email address: </label>
-      <input class="form-control bg-secondary text-light" type="email" id="email" name="email">
+      <input class="form-control bg-secondary text-light" type="email" name="email" placeholder="user@Example.com">
       <div class="form-group">
         <label for="password" class="text-light small">New Password: </label>
-        <input class="form-control bg-secondary text-light" type="password" id="password" name="password">
+        <input class="form-control bg-secondary text-light" type="password" name="password" placeholder="Password" >
       </div>
       <button type="submit" class="btn btn-primary">Login</button>
   </div>
