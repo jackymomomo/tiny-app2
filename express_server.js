@@ -1,3 +1,5 @@
+
+const {getUserByEmail, generateRandomString, addUser, urlDatabase, users} = require('./helpers')
 const express = require('express');
 const app = express();
 const bcrypt = require("bcryptjs");
@@ -16,90 +18,6 @@ app.use(
   })
 );
 
-
-
-
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "userRandomID",
-  },
-  i3BoGr: {
-    longURL: "https://www.google.ca",
-    userID: "user2RandomID",
-  },
-};
-
-const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
-  },
-};
-
-
-
-const addUser = (email, password) => {
-  const id = generateRandomString();
-  const hashedPassword = bcrypt.hashSync(password, 10)
-  users[id] = {
-    id,
-    email,
-    password: hashedPassword
-  };
-  return id;
-};
-
-const checkRegistration = (email, password) => {
-  if (email && password) {
-    return true;
-  }
-  return false;
-};
-
-
-const findUser = email => {
-  return Object.values(users).find(user => user.email === email);
-};
-
-
-
-const generateRandomString = () => {
-  let randomShort = '';
-  const char = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
-  for (let x = 0; x < 7; x++) {
-    if (Math.random() < 0.5) {
-      randomShort += Math.floor(Math.random() * 10);
-    } else {
-      randomShort += char[Math.floor(Math.random() * char.length)];
-    }
-  }
-  return randomShort;
-};
-
-const getUsersByThierEmail = function(email, data) {
-  for (let obj in data) {
-    let user = data[obj];
-    if (email === user.email) {
-      return user;
-    }
-  }
-  return null;
-};
-
-const checkPassword = (user, password) => {
-  if (user.password === password) {
-    return true;
-  } else {
-    return false;
-  }
-};
 app.get("/urls2.json", (req, res) => {
   res.json(users);
 });
@@ -148,7 +66,7 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
-  const user = findUser(email);
+  const user = getUserByEmail(email, users);
   if (!user) {
     res.status(403).send("Email cannot be found");
   } else if (!bcrypt.compareSync(password, user.password))  {
@@ -169,7 +87,7 @@ app.post("/register", (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) { 
     res.status(400).send('Email and/or password is missing');
-  }  if (findUser(email)) {
+  }  if (getUserByEmail(email, users)) {
     res.status(400).send('This email has already been registered');
   } else {
     const user_id = addUser(email, password);
