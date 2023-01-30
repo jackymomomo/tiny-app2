@@ -1,4 +1,4 @@
-
+//required FUNCTIONS & NPM packages for project completion
 const { urlsForUser ,getUserByEmail, generateRandomString, addUser, urlDatabase, users} = require('./helpers');
 const express = require('express');
 const app = express();
@@ -7,7 +7,7 @@ const PORT = 8080;
 cookieSession = require('cookie-session');
 app.use(express.urlencoded({ extended: true }));
 
-
+//App FUNCTIONALITY
 app.set('view engine', 'ejs');
 app.use(
   cookieSession({
@@ -17,7 +17,7 @@ app.use(
 );
 
 
-
+//LOGOUT Of Tiny App
 app.post('/logout', (req, res) => {
   req.session = null;
   res.redirect('/login');
