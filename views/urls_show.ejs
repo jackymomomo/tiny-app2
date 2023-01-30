@@ -23,10 +23,10 @@
         </p>
       </div>
       <div class="card-footer text-muted">
-        <form method="POST" action="/urls/<%= id %>/edit">
+        <form method="POST" action="/urls/<%= id %>">
           <h3 class="card-title">Edit Url</h3>
-          <label for="newUrl">New URL</label>
-          <input type="text" name="newURL" class="form" value="<%= longURL %>">
+          <label for="longURL">New URL</label>
+          <input type="text" name="longURL" class="form" value="<%= longURL %>">
           <button type="submit" class="btn btn-info">Submit</button>
         </form>
       </div>
