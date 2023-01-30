@@ -91,7 +91,7 @@ app.get("/urls/new", (req, res) => {
   if (templateVars.user) {
     res.render("urls_new", templateVars);
   } else {
-    res.render("registration-form", templateVars);
+    res.render("login_page", templateVars);
   }
 });
 
@@ -113,7 +113,7 @@ app.get("/urls", (req, res) => {
   if (templateVars.user) {
     res.render("urls_index", templateVars);
   } else {
-    res.redirect('/register');
+    res.redirect('/login');
   }
 });
 
