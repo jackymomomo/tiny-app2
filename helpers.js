@@ -57,5 +57,14 @@ const users = {
   },
 };
 
+const urlsForUser = function(idOfUser) {
+  const userUrls = {};
+  for (const id in urlDatabase) {
+    if (urlDatabase[id].userID === idOfUser) {
+      userUrls[id] = urlDatabase[id];
+    }
+  } 
+  return userUrls;
+};
 
-module.exports = {getUserByEmail, generateRandomString, addUser, urlDatabase, users}
+module.exports = { urlsForUser ,getUserByEmail, generateRandomString, addUser, urlDatabase, users}
