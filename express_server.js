@@ -17,7 +17,7 @@ app.use(
   })
 );
 
-// / => homepage
+// / => homepage <3
 app.get("/", (req, res) => {
   if (req.session.user_id) {
     res.redirect("/urls");
