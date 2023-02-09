@@ -1,5 +1,6 @@
-//required FUNCTIONS & NPM packages for project completion
-const { urlsForUser ,getUserByEmail, generateRandomString, addUser, urlDatabase, users} = require('./helpers');
+
+//Required functions and npm packages for project completion
+const { urlsForUser, getUserByEmail, generateRandomString, addUser, urlDatabase, users } = require('./helpers');
 const express = require('express');
 const app = express();
 const bcrypt = require("bcryptjs");
@@ -7,7 +8,7 @@ const PORT = 8080;
 cookieSession = require('cookie-session');
 app.use(express.urlencoded({ extended: true }));
 
-//App FUNCTIONALITY
+//App functionality
 app.set('view engine', 'ejs');
 app.use(
   cookieSession({
@@ -16,14 +17,25 @@ app.use(
   })
 );
 
+// / => homepage
+app.get("/", (req, res) => {
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
+});
 
-//LOGOUT Of Tiny App
+
+//Logout of Tiny App
 app.post('/logout', (req, res) => {
   req.session = null;
   res.redirect('/login');
 });
 
-//LOGIN to Your Tiny App Account
+//Login to Your Tiny App
+
+
 app.get('/login', (req, res) => {
   let templateVars = { user: users[req.session.user_id] };
   res.render('login_page', templateVars);
@@ -40,7 +52,7 @@ app.post('/login', (req, res) => {
     }
     res.status(401);
     res.render("urls_error", templateVars);
-  } else if (!bcrypt.compareSync(password, user.password))  {
+  } else if (!bcrypt.compareSync(password, user.password)) {
     let templateVars = {
       status: 401,
       message: 'Password incorrect',
@@ -54,7 +66,8 @@ app.post('/login', (req, res) => {
   }
 });
 
-//REGISTER Your Tiny APP Account
+//Register Your Tiny APP Account
+
 app.get('/register', (req, res) => {
   let templateVars = { user: users[req.session.user_id] };
   res.render('registration-form', templateVars);
@@ -91,17 +104,24 @@ app.get("/urls/new", (req, res) => {
   if (templateVars.user) {
     res.render("urls_new", templateVars);
   } else {
-    res.render("login_page", templateVars);
+    let templateVars = {
+      status: 401,
+      message: 'You need to be logged in to perform that action',
+      user: users[req.session.user_id]
+    }
+    res.status(401);
+    res.render("urls_error", templateVars);
   }
 });
 
 // /URLS => list of all of the user's URLs
+
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const userID = req.session.user_id;
   const randomShort = generateRandomString();
   urlDatabase[randomShort] = { longURL, userID };
-  res.redirect(`/urls`);
+  res.redirect('/urls/' + String(randomShort));
 });
 
 
@@ -113,15 +133,20 @@ app.get("/urls", (req, res) => {
   if (templateVars.user) {
     res.render("urls_index", templateVars);
   } else {
-    res.redirect('/login');
+    let templateVars = {
+      status: 401,
+      message: 'You need to be logged in to perform that action',
+      user: users[req.session.user_id]
+    }
+    res.status(401);
+    res.render("urls_error", templateVars);
   }
 });
 
-// /URLS/:id => page of the specific shortURL
-
+// /URLS/:id => page of the specific id
 
 app.get('/urls/:id', (req, res) => {
-  if (!urlDatabase[req.params.shortURL]) {
+  if (urlDatabase[req.params.shortURL]) {
     let templateVars = {
       status: 404,
       message: 'This TinyURL does not exist',
@@ -131,7 +156,7 @@ app.get('/urls/:id', (req, res) => {
     res.render("urls_error", templateVars);
   }
   let templateVarsForUrlIDS = {
-    id : req.params.id,
+    id: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
     user: users[req.session.user_id],
   };
@@ -148,7 +173,8 @@ app.get('/urls/:id', (req, res) => {
   }
 });
 
-//EDIT YOUR URLS
+//Edit Your URLs
+
 app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const longURL = req.body.longURL;
@@ -166,8 +192,8 @@ app.post('/urls/:id', (req, res) => {
   }
 });
 
+//Delete Your URLs
 
-//DELETE YOUR URLS
 app.post('/urls/:id/delete', (req, res) => {
   const id = req.params.id;
   if (req.session.user_id === urlDatabase[id].userID) {
@@ -184,14 +210,12 @@ app.post('/urls/:id/delete', (req, res) => {
   }
 });
 
-//error page
+//Error page
+
 app.get('/error', (req, res) => {
   res.render('urls_error');
 });
 
-
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-
