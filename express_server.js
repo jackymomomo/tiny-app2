@@ -28,13 +28,13 @@ app.get("/", (req, res) => {
 
 
 //Logout of Tiny App
+
 app.post('/logout', (req, res) => {
   req.session = null;
   res.redirect('/login');
 });
 
 //Login to Your Tiny App
-
 
 app.get('/login', (req, res) => {
   let templateVars = { user: users[req.session.user_id] };
